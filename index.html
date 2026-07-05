@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="top-header-bar">
+  <button type="button" class="hamburger-btn" id="hamburgerBtn" title="Open menu" aria-label="Open menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <div style="flex:1;"></div>
+  <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Toggle dark mode" aria-label="Toggle dark mode">
+    <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.55 1.55M18.25 18.25l1.55 1.55M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.55-1.55M18.25 5.75l1.55-1.55"/>
+    </svg>
+    <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>
+    </svg>
+  </button>
+</div>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <span class="sidebar-title">Menu</span>
+    <button type="button" class="sidebar-close" id="sidebarCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav>
+    <div class="nav-group">
+      <button class="nav-item nav-parent active" title="Mortgage" id="navMortgageToggle" aria-expanded="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        <span class="nav-label">Mortgage</span>
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="nav-submenu open" id="mortgageSubmenu">
+        <button class="nav-subitem" id="navMortgageCalc">Mortgage Calculator</button>
+        <button class="nav-subitem active" id="navMortgageOverpay">Mortgage Overpayment</button>
+      </div>
+    </div>
+    <button class="nav-item" title="Savings Goals" id="navSavings">
+      <svg viewBox="0 0 24 24"><text x="12" y="18.5" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="20" font-weight="700" fill="currentColor">£</text></svg>
+      <span class="nav-label">Savings Goals</span>
+    </button>
+    <button class="nav-item" title="Term">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span class="nav-label">Term</span>
+    </button>
+    <button class="nav-item" title="Remortgage">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h13M4 14l4-4M4 14l4 4M20 10H7M20 10l-4-4M20 10l-4 4"/></svg>
+      <span class="nav-label">Remortgage</span>
+    </button>
+    <button class="nav-item" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <span class="nav-label">Settings</span>
+    </button>
+  </nav>
+  <div class="spacer"></div>
+  <div class="avatar">JD</div>
+</div>
+
+<div class="main" id="overpayView">
+  <div class="content">
+    <header class="top">
+      <div>
+        <h1>Mortgage Dashboard</h1>
+        <p id="headerSub">Your mortgage progress, overpayment impact and remortgage outlook. Enter your details in the panels at the bottom.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-primary" id="addMortgageBtn" style="display:none;">+ Add mortgage</button>
+        <button class="btn btn-ghost" id="clearBtn">Clear all</button>
+      </div>
+    </header>
+
+    <div class="empty-note" id="emptyStateMessage" style="padding:70px 20px;font-size:14px;display:none;">
+      Add your mortgage details to see your dashboard.<br>
+      <span style="font-size:12.5px;">Click "+ Add mortgage" above to get started.</span>
+    </div>
+
+    <div id="dashboardBody">
+    <!-- Mortgage setup panels (now at top, collapsed by default) -->
+    <div class="panels-row setup-grid" id="setupSection" style="margin-bottom:16px;">
+      <div class="panel collapsed" id="panel-details">
+        <div class="panel-head" data-toggle="panel-details">
+          <div class="panel-head-left"><h2>Mortgage Details</h2></div>
+          <div class="panel-head-right">
+            <button class="btn btn-ghost" id="editMortgageBtn" type="button" style="padding:6px 14px;font-size:12.5px;" onclick="event.stopPropagation()">Edit</button>
+            <button class="chevron-btn" type="button" aria-label="Collapse Mortgage Details">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+        <div id="mortgageSummaryGrid" style="display:flex;flex-wrap:wrap;gap:16px 32px;margin-bottom:16px;"></div>
+        <div class="banner neutral" id="paymentBanner">Fill in the fields above to see your monthly payment.</div>
+        </div>
+      </div>
+
+      <div class="panel collapsed" id="panel-overpay">
+        <div class="panel-head" data-toggle="panel-overpay">
+          <div class="panel-head-left"><h2>Overpayments</h2></div>
+          <button class="chevron-btn" type="button" aria-label="Collapse Overpayments">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="panel-body">
+
+        <div class="field-grid" data-cols="2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Regular extra / month</label>
+            <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="regularOverpay" placeholder="e.g. 150" data-money="1"></div>
+          </div>
+          <div class="field">
+            <label>Annual overpayment cap</label>
+            <div class="suffix-wrap"><input type="number" id="overpayCap" placeholder="e.g. 10" step="1" min="0"><span class="suffix">%</span></div>
+          </div>
+        </div>
+
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;">Annual bonus overpayment</label>
+        <div class="field-grid" data-cols="2" style="margin-top:8px;margin-bottom:16px;">
+          <div class="field">
+            <label>Bonus month</label>
+            <select id="bonusMonth">
+              <option value="">Select month</option>
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+              <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Bonus amount</label>
+            <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="bonusAmount" placeholder="e.g. 2,000" data-money="1"></div>
+          </div>
+        </div>
+
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;">One-off lump sums</label>
+        <div class="overpay-list" id="lumpSumList" style="margin-top:8px;"></div>
+        <button class="add-link" id="addLumpSum">+ Add one-off lump sum</button>
+        </div>
+      </div>
+
+      <div class="panel collapsed" id="panel-remortgage">
+        <div class="panel-head" data-toggle="panel-remortgage">
+          <div class="panel-head-left"><h2>Remortgage Plan</h2></div>
+          <div class="panel-head-right">
+            <label class="switch" onclick="event.stopPropagation()">
+              <input type="checkbox" id="remortgageEnabled">
+              <span class="track"></span>
+            </label>
+            <button class="chevron-btn" type="button" aria-label="Collapse Remortgage Plan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+        <div id="remortgageFields" style="opacity:.4;pointer-events:none;">
+          <div class="remortgage-list" id="remortgageList"></div>
+          <button class="add-link" id="addRemortgage">+ Add remortgage</button>
+        </div>
+        <div class="banner warn" id="remortgageBanner" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top stats -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot teal"></span>Current balance</div>
+        <div class="value" id="statBalance">--</div>
+        <div class="sub" id="statBalanceSub">of original loan</div>
+      </div>
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot gold"></span>Equity built</div>
+        <div class="value" id="statEquity">--</div>
+        <div class="sub" id="statEquitySub">-- of property value</div>
+      </div>
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot orange"></span>Payoff date</div>
+        <div class="value" id="statPayoff">--</div>
+        <div class="sub" id="statPayoffSub">on current plan</div>
+      </div>
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot red"></span>Time / interest saved</div>
+        <div class="value" id="statSaved">--</div>
+        <div class="sub" id="statSavedSub">vs. no overpayments</div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="panels-row">
+      <div class="panel chart-panel clickable-panel" id="balancePanel">
+        <div class="panel-card-head">
+          <h2>Balance &amp; Equity Over Time <span class="muted-tag">baseline vs. with overpayments</span></h2>
+          <span class="expand-hint">Click to expand ⤢</span>
+        </div>
+        <div id="chartWrap"><canvas id="balanceChart" height="150"></canvas></div>
+        <div class="empty-note" id="chartEmpty" style="display:none;">Your balance and equity chart will appear here once you've entered your mortgage details.</div>
+      </div>
+      <div class="panel donut-panel clickable-panel" id="donutPanel">
+        <div class="panel-card-head">
+          <h2>Where Your Payment Goes</h2>
+          <span class="expand-hint">Click to expand ⤢</span>
+        </div>
+        <div class="donut-filter-row" onclick="event.stopPropagation()">
+          <label for="donutYearSelect">Year</label>
+          <select id="donutYearSelect"></select>
+        </div>
+        <div class="donut-wrap" id="donutWrap">
+          <canvas id="donutChart"></canvas>
+          <div class="legend">
+            <div class="row"><span class="dot teal"></span>Principal <span class="val" id="legPrincipal">--</span></div>
+            <div class="row"><span class="dot orange"></span>Interest <span class="val" id="legInterest">--</span></div>
+            <div class="row"><span class="dot gold"></span>Overpayments <span class="val" id="legOverpay">--</span></div>
+          </div>
+        </div>
+        <div class="empty-note" id="donutEmpty" style="display:none;">This will fill in once you've entered your mortgage details.</div>
+      </div>
+    </div>
+
+    <!-- Balance & Equity modal -->
+    <div class="modal-overlay" id="balanceModalOverlay">
+      <div class="modal-box">
+        <div class="modal-main">
+          <div class="modal-header">
+            <h2>Balance &amp; Equity Over Time</h2>
+            <button class="modal-close" data-close="balanceModalOverlay" aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-chart-wrap"><canvas id="balanceModalChart"></canvas></div>
+        </div>
+        <div class="modal-side">
+          <div class="field" style="margin-bottom:18px;">
+            <label>Year</label>
+            <select id="balanceModalYearSelect"></select>
+          </div>
+          <div class="modal-stat-list" id="balanceModalStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Where Your Payment Goes modal -->
+    <div class="modal-overlay" id="donutModalOverlay">
+      <div class="modal-box">
+        <div class="modal-main">
+          <div class="modal-header">
+            <h2>Where Your Payment Goes</h2>
+            <button class="modal-close" data-close="donutModalOverlay" aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-chart-wrap modal-donut-wrap">
+            <canvas id="donutModalChart"></canvas>
+          </div>
+        </div>
+        <div class="modal-side">
+          <div class="field" style="margin-bottom:18px;">
+            <label>Cumulative through year</label>
+            <select id="donutModalYearSelect"></select>
+          </div>
+          <div class="modal-stat-list" id="donutModalStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Year Detail modal (12-month breakdown) -->
+    <div class="modal-overlay" id="yearDetailModalOverlay">
+      <div class="modal-box">
+        <div class="modal-main">
+          <div class="modal-header">
+            <h2>Year Breakdown</h2>
+            <button class="modal-close" data-close="yearDetailModalOverlay" aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-chart-wrap" id="yearDetailTableWrap" style="overflow:auto;display:block;">
+            <table class="contracts" id="yearDetailTable" style="min-width:660px;">
+              <thead>
+                <tr><th>Month</th><th>Balance</th><th>Equity</th><th>Principal paid</th><th>Overpaid</th><th>Interest paid</th></tr>
+              </thead>
+              <tbody id="yearDetailTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-side">
+          <div class="field" style="margin-bottom:18px;">
+            <label>Year</label>
+            <select id="yearDetailYearSelect"></select>
+          </div>
+          <div class="modal-stat-list" id="yearDetailStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:16px;">
+      <h2>Yearly Progress <span class="muted-tag">balance, equity and cumulative interest by year</span></h2>
+      <div style="max-height:280px;overflow:auto;" id="tableWrap">
+      <table class="contracts">
+        <thead>
+          <tr><th>Year</th><th>Calendar year</th><th>Balance</th><th>Equity</th><th>Interest paid (yr)</th><th>Overpaid (yr)</th><th>Rate</th></tr>
+        </thead>
+        <tbody id="yearTableBody"></tbody>
+      </table>
+      </div>
+      <div class="empty-note" id="tableEmpty">Enter your mortgage details in the panels below to see your year-by-year progress.</div>
+    </div>
+    </div>
+
+    <div class="modal-overlay" id="mortgageDetailsModalOverlay">
+      <div class="modal-box" style="max-width:700px;">
+        <div class="modal-main" style="flex:1;">
+          <div class="modal-header">
+            <h2 id="mortgageDetailsModalTitle">Mortgage Details</h2>
+            <button class="modal-close" data-close="mortgageDetailsModalOverlay" aria-label="Close">&times;</button>
+          </div>
+          <div class="field-grid" data-cols="2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Mortgage start month</label>
+              <select id="startMonth">
+                <option value="">Select month</option>
+                <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+              </select>
+            </div>
+            <div class="field"><label>Mortgage start year</label><input type="number" id="startYear" placeholder="e.g. 2021" step="1"></div>
+          </div>
+          <div class="field-grid" data-cols="3">
+            <div class="field">
+              <label>Property value</label>
+              <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="propertyValue" placeholder="e.g. 320,000" data-money="1"></div>
+            </div>
+            <div class="field">
+              <label>Current balance</label>
+              <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="loanBalance" placeholder="e.g. 248,000" data-money="1"></div>
+            </div>
+            <div class="field"><label>Years remaining</label><input type="number" id="yearsRemaining" placeholder="e.g. 24" step="1" min="1"></div>
+            <div class="field">
+              <label>Current interest rate</label>
+              <div class="suffix-wrap"><input type="number" id="currentRate" placeholder="e.g. 4.75" step="0.01" min="0"><span class="suffix">%</span></div>
+            </div>
+            <div class="field"><label>Fixed rate ends (year)</label><input type="number" id="fixedEndYear" placeholder="e.g. 2028" step="1"></div>
+            <div class="field">
+              <label>Variable Rate</label>
+              <div class="suffix-wrap"><input type="number" id="variableRate" placeholder="e.g. 6.20" step="0.01" min="0"><span class="suffix">%</span></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:24px;">
+            <button class="btn btn-primary" id="mortgageDetailsDoneBtn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rightrail">
+    <div class="rail-block">
+      <h3>Loan-to-Value</h3>
+      <div class="bar-item">
+        <div class="lbl"><span>Current LTV</span><b id="ltvNow">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="ltvBarNow" style="width:0%;background:var(--teal);"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="lbl"><span>LTV in 5 years</span><b id="ltv5">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="ltvBar5" style="width:0%;background:var(--gold);"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="lbl"><span>LTV at remortgage</span><b id="ltvRemo">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="ltvBarRemo" style="width:0%;background:var(--orange);"></div></div>
+      </div>
+    </div>
+
+    <div class="rail-block">
+      <h3>Term Impact</h3>
+      <div class="cycle-grid">
+        <div class="cycle-cell" style="border-color:var(--teal);">
+          <div class="num" id="baselineYears">--<span>yrs</span></div>
+          <div class="lbl">Baseline term</div>
+        </div>
+        <div class="cycle-cell" style="border-color:var(--orange);">
+          <div class="num" id="newYears">--<span>yrs</span></div>
+          <div class="lbl">With overpayments</div>
+        </div>
+        <div class="cycle-cell" style="border-color:var(--gold);">
+          <div class="num" id="monthsSaved">--<span>mo</span></div>
+          <div class="lbl">Time saved</div>
+        </div>
+        <div class="cycle-cell" style="border-color:var(--red);">
+          <div class="num" id="interestSaved">--</div>
+          <div class="lbl">Interest saved</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail-block">
+      <h3>This Year at a Glance</h3>
+      <div class="bar-item">
+        <div class="lbl"><span>Principal repaid</span><b id="yr1Principal">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="yr1PrincipalBar" style="width:0%;background:var(--teal);"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="lbl"><span>Interest paid</span><b id="yr1Interest">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="yr1InterestBar" style="width:0%;background:var(--orange);"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="lbl"><span>Overpaid</span><b id="yr1Overpay">--</b></div>
+        <div class="bar-track"><div class="bar-fill" id="yr1OverpayBar" style="width:0%;background:var(--gold);"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="calculatorView" style="display:none;">
+  <div class="content" style="max-width:760px;">
+    <header class="top">
+      <div>
+        <h1>Mortgage Calculator</h1>
+        <p>Get a quick estimate of your monthly repayment and stamp duty.</p>
+      </div>
+    </header>
+
+    <div class="panel" style="margin-bottom:16px;">
+      <h2>Loan Details</h2>
+      <div class="field-grid" data-cols="2" style="margin-bottom:14px;">
+        <div class="field">
+          <label>Property value</label>
+          <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="calcPropertyValue" placeholder="e.g. 320,000" data-money="1"></div>
+        </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <label style="margin-bottom:0;">Deposit</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <span style="font-size:11px;color:var(--muted);font-weight:600;">£</span>
+              <span class="switch switch-sm">
+                <input type="checkbox" id="calcDepositIsPercent">
+                <span class="track"></span>
+              </span>
+              <span style="font-size:11px;color:var(--muted);font-weight:600;">%</span>
+            </label>
+          </div>
+          <div class="prefix-wrap" id="calcDepositValueWrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="calcDepositValue" placeholder="e.g. 32,000" data-money="1"></div>
+          <div class="suffix-wrap" id="calcDepositPctWrap" style="display:none;"><input type="number" id="calcDepositPct" placeholder="e.g. 10" step="0.1" min="0" max="100"><span class="suffix">%</span></div>
+        </div>
+      </div>
+      <div class="field-grid" data-cols="3">
+        <div class="field">
+          <label>Interest rate</label>
+          <div class="suffix-wrap"><input type="number" id="calcRate" placeholder="e.g. 4.75" step="0.01" min="0"><span class="suffix">%</span></div>
+        </div>
+        <div class="field">
+          <label>Term (years)</label>
+          <input type="number" id="calcTerm" placeholder="e.g. 25" step="1" min="1">
+        </div>
+        <div class="field">
+          <label>Loan amount (calculated)</label>
+          <input type="text" id="calcLoanAmountDisplay" disabled style="color:var(--text);background:var(--hover-bg);">
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot teal"></span>Monthly payment</div>
+        <div class="value" id="calcMonthlyPayment">--</div>
+        <div class="sub">principal &amp; interest</div>
+      </div>
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot orange"></span>Total repaid</div>
+        <div class="value" id="calcTotalRepaid">--</div>
+        <div class="sub">over the full term</div>
+      </div>
+      <div class="stat-card">
+        <div class="dot-label"><span class="dot red"></span>Total interest</div>
+        <div class="value" id="calcTotalInterest">--</div>
+        <div class="sub">over the full term</div>
+      </div>
+    </div>
+
+    <div class="empty-note" id="calcEmptyNote">Enter a property value, deposit, interest rate and term above to see your estimated monthly payment.</div>
+
+    <div class="panel" style="margin:16px 0;">
+      <h2>Stamp Duty <span class="muted-tag">England &amp; Northern Ireland (SDLT) only</span></h2>
+      <div class="field-grid" data-cols="3" style="margin-bottom:16px;">
+        <div class="field" style="grid-column:span 2;">
+          <label>Buyer type</label>
+          <select id="calcBuyerType">
+            <option value="first">Buying my first home</option>
+            <option value="next">Buying my next home</option>
+            <option value="additional">Buying an additional home</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stat-row" style="margin-bottom:0;">
+        <div class="stat-card">
+          <div class="dot-label"><span class="dot blue"></span>Estimated Stamp Duty</div>
+          <div class="value" id="calcStampDuty">--</div>
+          <div class="sub" id="calcStampDutySub">based on buyer type above</div>
+        </div>
+      </div>
+
+      <div id="calcStampDutyBreakdownWrap" style="margin-top:16px;display:none;">
+        <div style="max-height:220px;overflow:auto;">
+          <table class="contracts" id="calcStampDutyTable">
+            <thead><tr><th>Portion of price</th><th>Rate</th><th>Tax</th></tr></thead>
+            <tbody id="calcStampDutyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="banner neutral" style="margin-top:14px;">This is an estimate for guidance only, based on published HMRC SDLT rates. It doesn't cover Scotland (LBTT) or Wales (LTT), and doesn't account for reliefs, non-UK resident surcharges, or shared ownership. Always confirm the exact figure with your solicitor or HMRC.</div>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="savingsView" style="display:none;">
+  <div class="content" style="max-width:1400px;">
+    <header class="top">
+      <div>
+        <h1>Savings Dashboard</h1>
+        <p>Set your monthly savings and track what you're saving towards.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-primary" id="addGoalBtn">+ Add a savings goal</button>
+      </div>
+    </header>
+
+    <div class="subtab-nav">
+      <button class="subtab-btn active" id="subtabGoalsBtn" type="button">Goals</button>
+      <button class="subtab-btn" id="subtabTrackingBtn" type="button">Tracking</button>
+    </div>
+
+    <div id="goalsTabPanel">
+      <div class="panel collapsed" id="panel-monthly-savings" style="margin-bottom:16px;display:none;">
+        <div class="panel-head" data-toggle="panel-monthly-savings">
+          <div class="panel-head-left"><h2>Monthly Savings</h2></div>
+          <button class="chevron-btn" type="button" aria-label="Collapse Monthly Savings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="panel-body">
+          <div class="field-grid" style="margin-bottom:12px;max-width:260px;">
+            <div class="field">
+              <label>Today's date</label>
+              <input type="text" id="todayDateDisplay" disabled style="color:var(--text);background:var(--hover-bg);">
+            </div>
+          </div>
+          <div class="field-grid" data-cols="2" style="margin-bottom:12px;">
+            <div class="field">
+              <label>Starting savings</label>
+              <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="startingSavings" placeholder="e.g. 2,000" data-money="1"></div>
+            </div>
+            <div class="field">
+              <label>Monthly savings amount</label>
+              <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="monthlySavings" placeholder="e.g. 300" data-money="1"></div>
+            </div>
+          </div>
+          <div class="toggle-row" style="margin-bottom:10px;">
+            <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;">Regular one-off savings <span style="text-transform:none;font-weight:500;">(e.g. bonus)</span></label>
+            <label class="switch">
+              <input type="checkbox" id="bonusSavingsEnabled">
+              <span class="track"></span>
+            </label>
+          </div>
+          <div class="field-grid" data-cols="2" id="bonusSavingsFields" style="opacity:.4;pointer-events:none;">
+            <div class="field">
+              <label>Amount</label>
+              <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="annualBonusSavings" placeholder="e.g. 1,000" data-money="1"></div>
+            </div>
+            <div class="field">
+              <label>Month it'll be made</label>
+              <select id="bonusSavingsMonth">
+                <option value="">Select month</option>
+                <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="allocationChoiceWrap" style="display:none;">
+            <div class="divider"></div>
+            <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:10px;">You've got more than one goal — how should your savings be allocated?</label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <div class="allocation-option" data-mode="split" id="allocOptSplit">
+                <div class="opt-title">Split across all goals</div>
+                <div class="opt-sub">Divide your starting pot, monthly savings and bonus equally between every goal.</div>
+              </div>
+              <div class="allocation-option" data-mode="sequential" id="allocOptSequential">
+                <div class="opt-title">One goal at a time</div>
+                <div class="opt-sub">Fully fund your goals in the order you added them, then move to the next.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card-head" style="margin-bottom:16px;">
+        <h2 style="margin:0;">Savings Goals <span class="muted-tag" id="goalsCountTag"></span></h2>
+      </div>
+      <div class="donut-filter-row" id="viewAsOfRow" style="display:none;margin-bottom:16px;">
+        <label for="viewMonthSelect">View progress as of</label>
+        <button class="btn-nav-month" id="viewPrevBtn" type="button" title="Previous month" aria-label="Previous month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <select id="viewMonthSelect">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <select id="viewYearSelect"></select>
+        <button class="btn-nav-month" id="viewNextBtn" type="button" title="Next month" aria-label="Next month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn-reset-month" id="viewResetBtn" type="button">Reset to today</button>
+      </div>
+      <div class="goals-grid" id="goalsGrid"></div>
+    </div>
+
+    <div id="trackingTabPanel" style="display:none;">
+      <div class="empty-note" id="trackingEmptyNote">Add a savings goal first, then log your actual monthly savings here to see how you're tracking against plan.</div>
+      <div id="trackingTabContent" style="display:none;">
+        <div class="goal-stats" style="margin-bottom:20px;">
+          <div class="modal-stat">
+            <div class="m-label">Saved to date (actual)</div>
+            <div class="m-value teal" id="trkActualToDate">--</div>
+            <div class="m-sub" id="trkActualToDateSub">--</div>
+          </div>
+          <div class="modal-stat">
+            <div class="m-label">Planned to date</div>
+            <div class="m-value orange" id="trkPlannedToDate">--</div>
+            <div class="m-sub">based on your monthly savings plan</div>
+          </div>
+          <div class="modal-stat">
+            <div class="m-label">Variance to date</div>
+            <div class="m-value" id="trkVariance">--</div>
+            <div class="m-sub">actual vs. planned, to this month</div>
+          </div>
+          <div class="modal-stat">
+            <div class="m-label">Average actual / month</div>
+            <div class="m-value" id="trkAvgRate">--</div>
+            <div class="m-sub">since tracking began</div>
+          </div>
+        </div>
+        <div id="trackingBanner" class="banner" style="display:none;margin-bottom:18px;"></div>
+        <div style="max-height:420px;overflow:auto;" id="trackingTableWrap">
+          <table class="contracts" id="trackingTable" style="min-width:680px;">
+            <thead>
+              <tr><th>Month</th><th>Projected Total</th><th>Projected</th><th>Actual</th><th>Variance</th><th>Milestone</th></tr>
+            </thead>
+            <tbody id="trackingTableBody"></tbody>
+          </table>
+        </div>
+        <button class="add-link" id="trackingShowMoreBtn" style="margin-top:12px;">+ Show 12 more months</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add savings goal modal -->
+<div class="modal-overlay" id="goalModalOverlay">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-main" style="flex:1;">
+      <div class="modal-header">
+        <h2>Add a savings goal</h2>
+        <button class="modal-close" data-close="goalModalOverlay" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="goal-step active" id="goalStep1">
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:10px;">What are you saving for?</label>
+        <div class="goal-suggestions" id="goalSuggestions"></div>
+
+        <div class="divider"></div>
+
+        <div class="field" style="margin-bottom:16px;">
+          <label>Or enter your own</label>
+          <input type="text" id="goalCustomName" placeholder="e.g. New sofa">
+        </div>
+
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">Pick an icon</label>
+        <div class="icon-picker-grid" id="iconPickerGrid"></div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:22px;">
+          <button class="btn btn-primary" id="goalStep1Next">Next</button>
+        </div>
+      </div>
+
+      <div class="goal-step" id="goalStep2">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+          <div class="icon-circle" id="goalStep2IconWrap" style="width:42px;height:42px;border-radius:12px;background:var(--teal-pale);color:var(--teal-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+          <div style="font-size:16px;font-weight:700;" id="goalStep2Name"></div>
+        </div>
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">How much do you want to save?</label>
+        <div class="field" style="max-width:220px;margin-bottom:20px;">
+          <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="goalAmount" placeholder="e.g. 5,000" data-money="1"></div>
+        </div>
+        <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">Colour</label>
+        <div class="color-picker-grid" id="goalColorPickerGrid"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:26px;">
+          <button class="btn btn-ghost" id="goalStep2Back">Back</button>
+          <button class="btn btn-primary" id="goalAddBtn">Add goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit savings goal modal -->
+<div class="modal-overlay" id="editGoalModalOverlay">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-main" style="flex:1;">
+      <div class="modal-header">
+        <h2>Edit savings goal</h2>
+        <button class="modal-close" data-close="editGoalModalOverlay" aria-label="Close">&times;</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+        <div class="icon-circle" id="editGoalIconWrap" style="width:42px;height:42px;border-radius:12px;background:var(--teal-pale);color:var(--teal-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+        <div style="font-size:16px;font-weight:700;" id="editGoalName"></div>
+      </div>
+
+      <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">Target amount</label>
+      <div class="field" style="max-width:220px;margin-bottom:22px;">
+        <div class="prefix-wrap"><span class="prefix">£</span><input type="text" inputmode="numeric" id="editGoalAmount" placeholder="e.g. 5,000" data-money="1"></div>
+      </div>
+
+      <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">Icon</label>
+      <div class="icon-picker-grid" id="editIconPickerGrid" style="margin-bottom:22px;"></div>
+
+      <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:8px;">Colour</label>
+      <div class="color-picker-grid" id="editColorPickerGrid"></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:26px;">
+        <button class="btn btn-primary" id="editGoalSaveBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Split savings allocation modal -->
+<div class="modal-overlay" id="splitAllocationModalOverlay">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-main" style="flex:1;">
+      <div class="modal-header">
+        <h2>Allocate your savings</h2>
+        <button class="modal-close" data-close="splitAllocationModalOverlay" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="field-grid" data-cols="2" style="margin-bottom:18px;">
+        <div class="field">
+          <label>Monthly savings amount</label>
+          <input type="text" id="splitMonthlyDisplay" disabled style="color:var(--text);background:var(--hover-bg);">
+        </div>
+        <div class="field">
+          <label>Starting savings amount</label>
+          <input type="text" id="splitStartDisplay" disabled style="color:var(--text);background:var(--hover-bg);">
+        </div>
+      </div>
+
+      <label style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:10px;">How much of each should go to every goal?</label>
+      <div id="splitAllocationList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+
+      <div class="banner neutral" id="splitAllocationBanner"></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:22px;">
+        <button class="btn btn-primary" id="splitAllocationDoneBtn">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="dashboard.js"></script>
+<script src="calculator.js"></script>
+<script src="sidebar.js"></script>
+<script src="theme.js"></script>
+</body>
+</html>
